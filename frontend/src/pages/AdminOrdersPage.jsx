@@ -1,0 +1,141 @@
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import axiosInstance from "../lib/axios";
+import toast from "react-hot-toast";
+import { PackageCheck, PackageX } from "lucide-react";
+
+const AdminOrders = () => {
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const res = await axiosInstance.get("/orders");
+      setOrders(res.data);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      toast.error("Failed to fetch orders.");
+    }
+  };
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      console.log(orderId);
+      await axiosInstance.patch(`/orders/${orderId}`, {
+        status: newStatus,
+      });
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === orderId ? { ...order, status: newStatus } : order
+        )
+      );
+      toast.success(`Order status updated to ${newStatus}`);
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("Failed to update status."); // User-friendly error message
+    }
+  };
+
+  return (
+    <motion.div
+      className="bg-gray-800 shadow-lg rounded-lg overflow-hidden max-w-6xl mx-auto mt-10 p-6" // Added padding
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+    >
+      <h2 className="text-2xl font-bold text-white mb-4">Admin Orders</h2>{" "}
+      {/* Added margin bottom */}
+      <div className="overflow-x-auto">
+        {" "}
+        {/* Added for horizontal scrolling */}
+        <table className="min-w-full divide-y divide-gray-700 table-auto">
+          {" "}
+          {/* table-auto for responsive width */}
+          <thead className="bg-gray-700">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                User
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                Products
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                Total Amount
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-gray-800 divide-y divide-gray-700">
+            {orders.length > 0 ? (
+              orders.map((order) => (
+                <tr key={order._id} className="hover:bg-gray-700">
+                  <td className="px-4 py-4 whitespace-nowrap text-white">
+                    {" "}
+                    {/* Added text-white */}
+                    {order.user?.name || "Unknown"}
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-300">
+                    {order.products.map((p) => (
+                      <p key={p.product._id}>
+                        {p.product.name} x {p.quantity}
+                      </p>
+                    ))}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-gray-300">
+                    ${order.totalAmount?.toFixed(2) || "0.00"}{" "}
+                    {/* Handle potential null */}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <select
+                      className="p-2 bg-gray-900 text-white rounded cursor-pointer w-full" // Added w-full
+                      value={order.status}
+                      onChange={(e) =>
+                        handleStatusChange(order._id, e.target.value)
+                      }
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Shipped">Shipped</option>
+                      <option value="Delivered">Delivered</option>
+                    </select>
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                    {order.status === "Pending" ? (
+                      <button
+                        onClick={() => handleStatusChange(order._id, "Shipped")}
+                        className="text-green-400 hover:text-green-300 transition-colors duration-200 p-2 rounded"
+                      >
+                        <PackageCheck className="h-5 w-5" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleStatusChange(order._id, "Pending")}
+                        className="text-red-400 hover:text-red-300 transition-colors duration-200 p-2 rounded"
+                      >
+                        <PackageX className="h-5 w-5" />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="px-6 py-4 text-center text-gray-400">
+                  No orders found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </motion.div>
+  );
+};
+
+export default AdminOrders;

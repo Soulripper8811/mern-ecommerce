@@ -1,6 +1,7 @@
 import Coupon from "../models/coupon.model.js";
 import Order from "../models/order.model.js";
 import { stripe } from "../lib/stripe.js";
+import User from "../models/user.model.js";
 
 export const createCheckoutSession = async (req, res) => {
   try {
@@ -93,13 +94,21 @@ export const checkoutSuccess = async (req, res) => {
             code: session.metadata.couponCode,
             userId: session.metadata.userId,
           },
-          {
-            isActive: false,
-          }
+          { isActive: false }
         );
       }
 
-      // create a new Order
+      // **Check if the order already exists before inserting**
+      const existingOrder = await Order.findOne({ stripeSessionId: sessionId });
+      if (existingOrder) {
+        return res.status(200).json({
+          success: true,
+          message: "Order already exists.",
+          orderId: existingOrder._id,
+        });
+      }
+
+      // Create a new order
       const products = JSON.parse(session.metadata.products);
       const newOrder = new Order({
         user: session.metadata.userId,
@@ -108,11 +117,19 @@ export const checkoutSuccess = async (req, res) => {
           quantity: product.quantity,
           price: product.price,
         })),
-        totalAmount: session.amount_total / 100, // convert from cents to dollars,
+        totalAmount: session.amount_total / 100, // Convert from cents to dollars
         stripeSessionId: sessionId,
       });
 
       await newOrder.save();
+      const updatedUser = await User.findByIdAndUpdate(
+        session.metadata.userId,
+        {
+          cartItems: [],
+        },
+        { new: true }
+      );
+      console.log("updated user is here in checkout success", updatedUser);
 
       res.status(200).json({
         success: true,
@@ -120,6 +137,8 @@ export const checkoutSuccess = async (req, res) => {
           "Payment successful, order created, and coupon deactivated if used.",
         orderId: newOrder._id,
       });
+    } else {
+      res.status(400).json({ message: "Payment was not successful." });
     }
   } catch (error) {
     console.error("Error processing successful checkout:", error);

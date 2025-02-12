@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCartStore } from "../stores/useCartStore";
+import { Link } from "react-router-dom";
 
 const FeaturedProducts = ({ featuredProducts }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -55,11 +56,13 @@ const FeaturedProducts = ({ featuredProducts }) => {
                 >
                   <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg shadow-lg overflow-hidden h-full transition-all duration-300 hover:shadow-xl border border-emerald-500/30">
                     <div className="overflow-hidden">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-48 object-cover transition-transform duration-300 ease-in-out hover:scale-110"
-                      />
+                      <Link to={`/product/${product._id}`} className="block">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-48 object-cover transition-transform duration-300 ease-in-out hover:scale-110"
+                        />
+                      </Link>
                     </div>
                     <div className="p-4">
                       <h3 className="text-lg font-semibold mb-2 text-white">

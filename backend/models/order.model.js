@@ -31,6 +31,11 @@ const orderSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    status: {
+      type: String,
+      enum: ["Pending", "Shipped", "Delivered"],
+      default: "Pending",
+    },
     stripeSessionId: {
       type: String,
       unique: true,

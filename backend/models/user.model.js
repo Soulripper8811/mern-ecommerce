@@ -30,6 +30,17 @@ const UserSchema = new mongoose.Schema(
         },
       },
     ],
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+    },
+    verificationTokenExpires: {
+      type: Date,
+    },
+    profileImage: { type: String, default: "" }, // Add profile image field
     role: {
       type: String,
       emum: ["customer", "admin"],

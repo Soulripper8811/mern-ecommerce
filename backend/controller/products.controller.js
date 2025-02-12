@@ -133,6 +133,58 @@ export const toggleFeaturedProduct = async (req, res) => {
   }
 };
 
+export const getSingleProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (product) {
+      res.json(product);
+    } else {
+      res.status(404).json({ message: "Product not found" });
+    }
+  } catch (error) {
+    console.log("Error in getSingleProduct controller", error.message);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const CommentOnProduct = async (req, res) => {
+  const { id } = req.params;
+  const { rating, message } = req.body;
+  const user = req.user?.name || req.user?.email; // Get user info from auth middleware
+
+  if (!rating || !message) {
+    return res.status(400).json({ error: "Rating and message are required" });
+  }
+
+  try {
+    const product = await Product.findById(id);
+    if (!product) return res.status(404).json({ error: "Product not found" });
+
+    // Add new comment
+    const newComment = { user, rating, message };
+    product.comments.push(newComment);
+    await product.save();
+
+    res.json({ message: "Comment added successfully", product });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to add comment" });
+  }
+};
+
+export const getProductComments = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const product = await Product.findById(id).select("comments");
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json(product.comments);
+  } catch (error) {
+    res.status(500).json({ error: "Server error: " + error.message });
+  }
+};
 async function updateFeaturedProductsCache() {
   try {
     // The lean() method  is used to return plain JavaScript objects instead of full Mongoose documents. This can significantly improve performance

@@ -1,15 +1,22 @@
-import { BarChart, PlusCircle, ShoppingBasket } from "lucide-react";
+import {
+  BarChart,
+  ListOrdered,
+  PlusCircle,
+  ShoppingBasket,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import CreateProductForm from "../components/CreateProductForm";
 import ProductsList from "../components/ProductsList";
 import AnalyticsTab from "../components/AnalyticsTab";
 import { useProductStore } from "../stores/useProductStore";
+import AdminOrders from "./AdminOrdersPage";
 
 const tabs = [
   { id: "create", label: "Create Product", icon: PlusCircle },
   { id: "products", label: "Products", icon: ShoppingBasket },
   { id: "analytics", label: "Analytics", icon: BarChart },
+  { id: "orders", label: "Orders", icon: ListOrdered },
 ];
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("create");
@@ -49,6 +56,7 @@ const AdminPage = () => {
         {activeTab === "create" && <CreateProductForm />}
         {activeTab === "products" && <ProductsList />}
         {activeTab === "analytics" && <AnalyticsTab />}
+        {activeTab === "orders" && <AdminOrders />}
       </div>
     </div>
   );

@@ -1,5 +1,24 @@
 import mongoose from "mongoose";
 
+const CommentSchema = new mongoose.Schema(
+  {
+    user: {
+      type: String, // You can store user ID if you have authentication
+      required: true,
+    },
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5,
+      required: true,
+    },
+    message: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 const ProductSchema = new mongoose.Schema(
   {
     name: {
@@ -26,6 +45,10 @@ const ProductSchema = new mongoose.Schema(
     isFeatured: {
       type: Boolean,
       default: false,
+    },
+    comments: {
+      type: [CommentSchema], // Optional array of comments
+      default: [],
     },
   },
   { timestamps: true }

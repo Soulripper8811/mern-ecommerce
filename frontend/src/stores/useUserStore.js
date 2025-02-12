@@ -20,12 +20,33 @@ export const useUserStore = create((set, get) => ({
         password,
       });
       console.log(res.data);
-      set({ user: res.data, loading: false });
+      toast.success(res.data.message);
     } catch (error) {
       set({ loading: false });
       toast.error(error.response.data.message || "An error occured");
+    } finally {
+      set({ loading: false });
     }
   },
+  // signup: async ({ name, email, password, confirmPassword }) => {
+  //   set({ loading: true });
+  //   if (password !== confirmPassword) {
+  //     set({ loading: false });
+  //     return toast.error("Passwords do not match");
+  //   }
+  //   try {
+  //     const res = await axiosInstance.post("/auth/signup", {
+  //       name,
+  //       email,
+  //       password,
+  //     });
+  //     console.log(res.data);
+  //     set({ user: res.data, loading: false });
+  //   } catch (error) {
+  //     set({ loading: false });
+  //     toast.error(error.response.data.message || "An error occured");
+  //   }
+  // },
   login: async ({ email, password }) => {
     set({ loading: true });
 
@@ -67,12 +88,27 @@ export const useUserStore = create((set, get) => ({
 
     set({ checkingAuth: true });
     try {
-      const response = await axios.post("/auth/refresh-token");
+      const response = await axiosInstance.post("/auth/refresh-token");
       set({ checkingAuth: false });
       return response.data;
     } catch (error) {
       set({ user: null, checkingAuth: false });
       throw error;
+    }
+  },
+  updateProfile: async (profile) => {
+    set({ loading: true });
+    try {
+      const response = await axiosInstance.patch(
+        "/auth/update-profile",
+        profile
+      );
+      set({ user: response.data });
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      toast.error(error.response.data.message || "An error occurred");
+    } finally {
+      set({ loading: false });
     }
   },
 }));
