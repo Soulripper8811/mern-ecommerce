@@ -22,7 +22,11 @@ export const getSingleUser = async (req, res) => {
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
-    res.json(order);
+    const NotDeliveredOrder = order.filter(
+      (order) => order.status !== "Delivered"
+    );
+
+    res.json(NotDeliveredOrder);
   } catch (error) {
     console.log("Error in get single order controller", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
