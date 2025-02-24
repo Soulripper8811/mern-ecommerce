@@ -47,7 +47,8 @@ app.use("/api/chatbot", chatRoutes);
 // }
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("Hello World! how are you");
+
 });
 app.listen(PORT, () => {
   console.log("Server is running on http://localhost:" + PORT);
