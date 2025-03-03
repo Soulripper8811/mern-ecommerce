@@ -228,7 +228,7 @@ export const verifyEmail = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { name, profileImage } = req.body;
+    const { name, profileImage, address } = req.body;
 
     const user = await User.findById(userId);
     if (!user) {
@@ -261,6 +261,9 @@ export const updateProfile = async (req, res) => {
 
     if (name) {
       user.name = name;
+    }
+    if (address) {
+      user.address = address;
     }
 
     await user.save();

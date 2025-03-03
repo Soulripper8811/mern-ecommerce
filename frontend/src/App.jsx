@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
@@ -7,9 +8,8 @@ import AdminPage from "./pages/AdminPage";
 import CategoryPage from "./pages/CategoryPage";
 
 import Navbar from "./components/Navbar";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { useUserStore } from "./stores/useUserStore";
-import { useEffect } from "react";
 import LoadingSpinner from "./components/LoadingSpinner";
 import CartPage from "./pages/CartPage";
 import { useCartStore } from "./stores/useCartStore";
@@ -20,20 +20,42 @@ import MyOrdersPage from "./pages/MyOrdersPage";
 import ProfilePage from "./pages/ProfilePage";
 import { useProductStore } from "./stores/useProductStore";
 import ChatButton from "./components/ChatButton";
+import axiosInstance from "./lib/axios";
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
-  const { products } = useProductStore();
+  const { products, fetchAllProducts } = useProductStore();
   const { getCartItems } = useCartStore();
+  const [chatProducts, setChatProducts] = useState([]);
+
   useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
+  }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (user) {
+      getCartItems();
+    }
+  }, [user]);
 
-    getCartItems();
-  }, [getCartItems, user]);
+  // ✅ Fixed: Using async/await properly and avoiding infinite re-renders
+  const fetchProductsAll = async () => {
+    try {
+      const response = await axiosInstance.get("/products"); // ✅ Await added
+      setChatProducts(response.data.products);
+      console.log("Fetched Products:", response.data.products);
+    } catch (error) {
+      toast.error("Error fetching products");
+    }
+  };
+
+  useEffect(() => {
+    fetchProductsAll();
+  }, []); // ✅ Runs only once when the component mounts
+
+  useEffect(() => {
+    fetchAllProducts(); // ✅ Fetching products for Zustand store
+  }, []);
 
   if (checkingAuth) return <LoadingSpinner />;
 
@@ -92,8 +114,8 @@ function App() {
       </div>
       <Toaster />
       {user && products.length > 0 && (
-        <ChatButton products={products} userId={user._id} />
-      )}{" "}
+        <ChatButton products={chatProducts} userId={user._id} />
+      )}
     </div>
   );
 }

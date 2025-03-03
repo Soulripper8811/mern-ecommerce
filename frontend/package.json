@@ -14,11 +14,13 @@
     "axios": "^1.7.9",
     "framer-motion": "^11.15.0",
     "lucide-react": "^0.469.0",
+    "mern-ecommerce": "file:..",
     "path-browserify": "^1.0.1",
     "react": "^18.3.1",
     "react-confetti": "^6.2.2",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
+    "react-icons": "^5.5.0",
     "react-router-dom": "^7.1.1",
     "recharts": "^2.15.0",
     "zustand": "^5.0.2"

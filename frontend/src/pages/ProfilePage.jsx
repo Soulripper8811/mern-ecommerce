@@ -12,6 +12,7 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState({
     name: user.name,
     email: user.email,
+    address: user.address,
     profileImage: user.profileImage,
     isVerified: user.isVerified,
   });
@@ -88,6 +89,16 @@ const ProfilePage = () => {
             value={profile.email}
             className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500"
             required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-300">
+            Delivery Address
+          </label>
+          <textarea
+            type="text"
+            value={profile.address}
+            className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500"
           />
         </div>
 
