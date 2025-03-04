@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import CategoryItem from "../components/CategoryItem";
 import { useProductStore } from "../stores/useProductStore";
 import FeaturedProducts from "../components/FeaturedProduct";
+import { useUserStore } from "../stores/useUserStore";
+import { Navigate } from "react-router-dom";
 
 const categories = [
   { href: "/jeans", name: "Jeans", imageUrl: "/jeans.jpg" },
@@ -14,12 +16,18 @@ const categories = [
 ];
 
 const HomePage = () => {
+  const {user}=useUserStore()
   const { fetchFeaturedProducts, products, isLoading } = useProductStore();
+  
 
   useEffect(() => {
     fetchFeaturedProducts();
   }, [fetchFeaturedProducts]);
-
+  useEffect(()=>{
+    if(user && user.role==="admin"){
+      <Navigate to={"/secret-dashboard"}/>
+    }
+  },[user])
   return (
     <div className="relative min-h-screen text-white overflow-hidden">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

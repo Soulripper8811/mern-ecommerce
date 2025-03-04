@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getAllUser,
   getProfile,
   login,
   logout,
@@ -8,7 +9,7 @@ import {
   updateProfile,
   verifyEmail,
 } from "../controller/auth.controller.js";
-import { protectRoute } from "../middleware/auth.middleware.js";
+import { adminRoute, protectRoute } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -19,5 +20,6 @@ router.post("/refresh-token", refreshToken);
 router.get("/profile", protectRoute, getProfile);
 router.get("/verify-email", verifyEmail);
 router.patch("/update-profile", protectRoute, updateProfile);
+router.get("/getusers", protectRoute, adminRoute,getAllUser);
 
 export default router;

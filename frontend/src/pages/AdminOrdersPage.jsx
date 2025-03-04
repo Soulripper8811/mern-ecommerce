@@ -106,21 +106,38 @@ const AdminOrders = () => {
                     </select>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                    {order.status === "Pending" ? (
+                    {order.status === "Pending" && (
                       <button
-                        onClick={() => handleStatusChange(order._id, "Shipped")}
+                        onClick={() => handleStatusChange(order._id, "Pending")}
+                        className="text-yellow-400 hover:text-yellow-300 transition-colors duration-200 p-2 rounded"
+                      >
+                        <PackageX className="h-5 w-5" />
+                      </button>
+                    )}  
+                    {order.status === "Shipped"&&
+                      (
+                        <button
+                          onClick={() => handleStatusChange(order._id, "Shipped")}
+                          className="text-red-400 hover:text-red-300 transition-colors duration-200 p-2 rounded"
+                        >
+                          <PackageX className="h-5 w-5" />
+                        </button>
+                      )
+                    }
+
+                    {
+                      order.status==="Delivered"&&(
+                      <button
+                        onClick={() => handleStatusChange(order._id, "delivered")}
                         className="text-green-400 hover:text-green-300 transition-colors duration-200 p-2 rounded"
                       >
                         <PackageCheck className="h-5 w-5" />
                       </button>
-                    ) : (
-                      <button
-                        onClick={() => handleStatusChange(order._id, "Pending")}
-                        className="text-red-400 hover:text-red-300 transition-colors duration-200 p-2 rounded"
-                      >
-                        <PackageX className="h-5 w-5" />
-                      </button>
-                    )}
+                      )
+                    }
+                    
+                    
+
                   </td>
                 </tr>
               ))

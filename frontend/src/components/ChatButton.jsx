@@ -69,7 +69,7 @@ const ChatButton = ({ products, userId }) => {
             return (
               <div
                 key={index}
-                className="border p-3 rounded-lg shadow-md bg-white cursor-pointer hover:bg-gray-100 transition-transform transform hover:scale-105"
+                className="border border-black p-3 rounded-lg shadow-md bg-white cursor-pointer hover:bg-gray-100 transition-transform transform hover:scale-105"
                 onClick={() => navigate(`/product/${productId}`)}
               >
                 {product.image && (
@@ -101,7 +101,7 @@ const ChatButton = ({ products, userId }) => {
       </button>
 
       {isChatOpen && (
-        <div className="fixed bottom-20 right-5 bg-white border border-gray-300 rounded-lg shadow-xl p-4 w-96 z-50 flex flex-col animate-slide-up">
+        <div className="fixed bottom-20 right-5 bg-white border border-gray-300 rounded-lg shadow-xl p-4 w-[35rem] z-50 flex flex-col animate-slide-up">
           {/* Chat Header */}
           <div className="flex justify-between items-center border-b pb-2 mb-2">
             <h2 className="text-lg font-semibold text-gray-700">

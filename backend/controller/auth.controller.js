@@ -227,9 +227,10 @@ export const verifyEmail = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
+    
     const userId = req.user._id;
-    const { name, profileImage, address } = req.body;
-
+    const { name, profileImage, address ,city} = req.body;
+    console.log(city,address)
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -265,6 +266,9 @@ export const updateProfile = async (req, res) => {
     if (address) {
       user.address = address;
     }
+    if(city){
+      user.city=city
+    }
 
     await user.save();
     res.status(200).json(user);
@@ -273,3 +277,14 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const getAllUser=async(req,res)=>{
+  try {
+    const users =await User.find({})
+    res.status(200).json({users})
+  } catch (error) {
+    console.error("Error inn fetchall user:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+

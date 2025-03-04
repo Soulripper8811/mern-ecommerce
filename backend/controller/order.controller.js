@@ -3,11 +3,16 @@ import Order from "../models/order.model.js";
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
-      .populate("user", "name")
-      .populate("products.product", "name price image");
+      .populate("user", "name") // Populate user name
+      .populate({
+        path: "products.product",
+        select: "name price image", // Ensure name & image are selected
+      })
+      .lean(); // Convert Mongoose documents to plain objects
+
     res.json(orders);
   } catch (error) {
-    console.log("Error in get all orders controller", error.message);
+    console.error("Error in get all orders controller:", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -16,19 +21,25 @@ export const getSingleUser = async (req, res) => {
   try {
     const userId = req.user._id;
     console.log("userId", userId);
-    const order = await Order.find({
-      user: userId,
-    });
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-    const NotDeliveredOrder = order.filter(
-      (order) => order.status !== "Delivered"
-    );
 
-    res.json(NotDeliveredOrder);
+    // Fetch orders for the user and populate product details
+    const orders = await Order.find({ user: userId })
+      .populate({
+        path: "products.product",
+        select: "name price image", // Ensure product details are included
+      })
+      .lean(); // Convert Mongoose documents to plain objects
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No orders found" });
+    }
+
+    // Filter out delivered orders
+   
+
+    res.json(orders);
   } catch (error) {
-    console.log("Error in get single order controller", error.message);
+    console.error("Error in get single user orders controller:", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

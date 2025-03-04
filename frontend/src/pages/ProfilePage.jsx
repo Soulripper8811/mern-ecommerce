@@ -13,6 +13,7 @@ const ProfilePage = () => {
     name: user.name,
     email: user.email,
     address: user.address,
+    city:user.city,
     profileImage: user.profileImage,
     isVerified: user.isVerified,
   });
@@ -99,6 +100,18 @@ const ProfilePage = () => {
             type="text"
             value={profile.address}
             className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500"
+            onChange={(e) => setProfile({ ...profile, address: e.target.value })}
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-300">
+            City
+          </label>
+          <input
+            type="text"
+            value={profile.city}
+            className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-3 text-white focus:ring-emerald-500"
+            onChange={(e) => setProfile({ ...profile, city: e.target.value })}
           />
         </div>
 
