@@ -263,12 +263,7 @@ export const updateProfile = async (req, res) => {
     if (name) {
       user.name = name;
     }
-    if (address) {
-      user.address = address;
-    }
-    if(city){
-      user.city=city
-    }
+    
 
     await user.save();
     res.status(200).json(user);

@@ -50,6 +50,10 @@ export const createCheckoutSession = async (req, res) => {
       mode: "payment",
       success_url: `${process.env.CLIENT_URL}/purchase-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.CLIENT_URL}/purchase-cancel`,
+      shipping_address_collection:{
+        allowed_countries:["IN","US"]
+      },
+      billing_address_collection:"required",
       discounts: coupon
         ? [
             {
@@ -82,10 +86,78 @@ export const createCheckoutSession = async (req, res) => {
   }
 };
 
+// export const checkoutSuccess = async (req, res) => {
+//   try {
+//     const { sessionId } = req.body;
+//     const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+//     if (session.payment_status === "paid") {
+//       if (session.metadata.couponCode) {
+//         await Coupon.findOneAndUpdate(
+//           {
+//             code: session.metadata.couponCode,
+//             userId: session.metadata.userId,
+//           },
+//           { isActive: false }
+//         );
+//       }
+
+//       // **Check if the order already exists before inserting**
+//       const existingOrder = await Order.findOne({ stripeSessionId: sessionId });
+//       if (existingOrder) {
+//         return res.status(200).json({
+//           success: true,
+//           message: "Order already exists.",
+//           orderId: existingOrder._id,
+//         });
+//       }
+
+//       // Create a new order
+//       const products = JSON.parse(session.metadata.products);
+//       const newOrder = new Order({
+//         user: session.metadata.userId,
+//         products: products.map((product) => ({
+//           product: product.id,
+//           quantity: product.quantity,
+//           price: product.price,
+//         })),
+//         totalAmount: session.amount_total / 100, // Convert from cents to dollars
+//         stripeSessionId: sessionId,
+//       });
+
+//       await newOrder.save();
+//       const updatedUser = await User.findByIdAndUpdate(
+//         session.metadata.userId,
+//         {
+//           cartItems: [],
+//         },
+//         { new: true }
+//       );
+//       console.log("updated user is here in checkout success", updatedUser);
+
+//       res.status(200).json({
+//         success: true,
+//         message:
+//           "Payment successful, order created, and coupon deactivated if used.",
+//         orderId: newOrder._id,
+//       });
+//     } else {
+//       res.status(400).json({ message: "Payment was not successful." });
+//     }
+//   } catch (error) {
+//     console.error("Error processing successful checkout:", error);
+//     res.status(500).json({
+//       message: "Error processing successful checkout",
+//       error: error.message,
+//     });
+//   }
+// };
 export const checkoutSuccess = async (req, res) => {
   try {
     const { sessionId } = req.body;
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ["customer_details"], // Expands customer details to get address
+    });
 
     if (session.payment_status === "paid") {
       if (session.metadata.couponCode) {
@@ -108,8 +180,20 @@ export const checkoutSuccess = async (req, res) => {
         });
       }
 
-      // Create a new order
+      // Extract products from metadata
       const products = JSON.parse(session.metadata.products);
+
+      // Extract shipping address from Stripe session
+      const shippingAddress = {
+        fullName: session.customer_details.name,
+        street: session.customer_details.address.line1,
+        city: session.customer_details.address.city,
+        state: session.customer_details.address.state || "",
+        postalCode: session.customer_details.address.postal_code,
+        country: session.customer_details.address.country,
+      };
+
+      // Create a new order with shipping address
       const newOrder = new Order({
         user: session.metadata.userId,
         products: products.map((product) => ({
@@ -119,22 +203,22 @@ export const checkoutSuccess = async (req, res) => {
         })),
         totalAmount: session.amount_total / 100, // Convert from cents to dollars
         stripeSessionId: sessionId,
+        shippingAddress, // Save the shipping address
       });
 
       await newOrder.save();
+
+      // Clear user cart after successful order
       const updatedUser = await User.findByIdAndUpdate(
         session.metadata.userId,
-        {
-          cartItems: [],
-        },
+        { cartItems: [] },
         { new: true }
       );
-      console.log("updated user is here in checkout success", updatedUser);
+      console.log("Updated user in checkout success:", updatedUser);
 
       res.status(200).json({
         success: true,
-        message:
-          "Payment successful, order created, and coupon deactivated if used.",
+        message: "Payment successful, order created, and coupon deactivated if used.",
         orderId: newOrder._id,
       });
     } else {
@@ -148,6 +232,7 @@ export const checkoutSuccess = async (req, res) => {
     });
   }
 };
+
 
 async function createStripeCoupon(discountPercentage) {
   const coupon = await stripe.coupons.create({
