@@ -43,6 +43,7 @@ export const createProduct = async (req, res) => {
         folder: "products",
       });
     }
+    
 
     const product = await Product.create({
       name,
@@ -51,7 +52,6 @@ export const createProduct = async (req, res) => {
       image: cloudinaryResponse?.secure_url || "",
       category,
     });
-
     res.status(201).json(product);
   } catch (error) {
     console.error("Error in createProduct controller:", error.message);
@@ -86,9 +86,32 @@ export const deleteProduct = async (req, res) => {
 export const getRecommendedProducts = async (req, res) => {
   try {
     const products = await Product.aggregate([
-      { $sample: { size: 4 } },
-      { $project: { _id: 1, name: 1, description: 1, image: 1, price: 1 } },
+      {
+        $match: { comments: { $exists: true, $ne: [] } }, // Exclude products with no comments
+      },
+      {
+        $addFields: {
+          reviewCount: { $size: "$comments" }, // Count the number of comments
+        },
+      },
+      {
+        $sort: { reviewCount: -1 }, // Sort by highest number of comments
+      },
+      {
+        $limit: 3, // Get top 3 products
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          description: 1,
+          image: 1,
+          price: 1,
+          reviewCount: 1, // Include the review count in response
+        },
+      },
     ]);
+
     res.json(products);
   } catch (error) {
     console.error("Error in getRecommendedProducts controller:", error.message);

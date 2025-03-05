@@ -97,7 +97,7 @@ const MyOrdersPage = () => {
                           <div>
                             <p className="text-white">{p.product.name}</p>
                             <p className="text-gray-400">
-                              {p.quantity} x ${p.price.toFixed(2)}
+                              {p.quantity} x ₹{p.price.toFixed(2)}
                             </p>
                           </div>
                           </Link>

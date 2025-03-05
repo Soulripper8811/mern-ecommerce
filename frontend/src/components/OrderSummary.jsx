@@ -51,7 +51,7 @@ const OrderSummary = () => {
               Original price
             </dt>
             <dd className="text-base font-medium text-white">
-              ${formattedSubtotal}
+            ₹{formattedSubtotal}
             </dd>
           </dl>
 
@@ -59,7 +59,7 @@ const OrderSummary = () => {
             <dl className="flex items-center justify-between gap-4">
               <dt className="text-base font-normal text-gray-300">Savings</dt>
               <dd className="text-base font-medium text-emerald-400">
-                -${formattedSavings}
+                -₹{formattedSavings}
               </dd>
             </dl>
           )}
@@ -77,7 +77,7 @@ const OrderSummary = () => {
           <dl className="flex items-center justify-between gap-4 border-t border-gray-600 pt-2">
             <dt className="text-base font-bold text-white">Total</dt>
             <dd className="text-base font-bold text-emerald-400">
-              ${formattedTotal}
+            ₹{formattedTotal}
             </dd>
           </dl>
         </div>

@@ -6,13 +6,13 @@ import { useUserStore } from "../stores/useUserStore";
 import { Navigate } from "react-router-dom";
 
 const categories = [
-  { href: "/jeans", name: "Jeans", imageUrl: "/jeans.jpg" },
-  { href: "/t-shirts", name: "T-shirts", imageUrl: "/tshirts.jpg" },
-  { href: "/shoes", name: "Shoes", imageUrl: "/shoes.jpg" },
-  { href: "/glasses", name: "Glasses", imageUrl: "/glasses.png" },
-  { href: "/jackets", name: "Jackets", imageUrl: "/jackets.jpg" },
-  { href: "/suits", name: "Suits", imageUrl: "/suits.jpg" },
-  { href: "/bags", name: "Bags", imageUrl: "/bags.jpg" },
+  { href: "/carpet-wooden", name: "Carpet(wooden flooring)", imageUrl: "/jeans.jpg" },
+  { href: "/PVC-carpet-marble", name: "PVC Carpet(marble)", imageUrl: "/tshirts.jpg" },
+  { href: "/carpet-vinyl-tiles", name: "Carpet tiles(Vinyl flooring)", imageUrl: "/shoes.jpg" },
+  { href: "/flower-wallpaper", name: "Flower wallpaper", imageUrl: "/glasses.png" },
+  { href: "/geometric-wallpaper", name: "Geometric wallpaper", imageUrl: "/jackets.jpg" },
+  { href: "/bricks-wallpaper", name: "Bricks wallpeper", imageUrl: "/suits.jpg" },
+  { href: "/3d-wallpaper", name: "3d wallpaper", imageUrl: "/bags.jpg" },
 ];
 
 const HomePage = () => {

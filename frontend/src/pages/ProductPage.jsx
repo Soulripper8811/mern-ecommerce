@@ -10,7 +10,6 @@ import { useUserStore } from "../stores/useUserStore";
 
 const ProductDetails = () => {
   const { user } = useUserStore();
-  console.log("User", user);
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
@@ -96,19 +95,23 @@ const ProductDetails = () => {
           ${product.price}
         </p>
         <p className="mt-3 text-gray-300">{product.description}</p>
-        <button
+        {user&&<button
           className="mt-5 flex items-center gap-2 bg-emerald-600 px-5 py-2 text-lg font-medium text-white rounded-lg hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-300"
           onClick={handleAddToCart}
         >
           <ShoppingCart size={22} />
           Add to Cart
-        </button>
+        </button>}
 
         {/* Comments Section */}
         <div className="mt-10">
           <h3 className="text-2xl font-semibold">Customer Reviews</h3>
 
           {/* Comment Form */}
+          {
+              user&&(
+
+             <>
           <div className="mt-5">
             <h4 className="text-lg font-medium">Leave a Review</h4>
             <div className="flex gap-2 my-2">
@@ -123,20 +126,24 @@ const ProductDetails = () => {
                 />
               ))}
             </div>
-            <textarea
-              className="w-full p-2 text-black rounded-lg"
-              rows="3"
-              placeholder="Write a review..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            ></textarea>
-            <button
-              className="mt-3 bg-blue-600 px-5 py-2 text-lg font-medium text-white rounded-lg hover:bg-blue-700"
-              onClick={handleSubmitComment}
-            >
+            
+                <textarea
+                className="w-full p-2 text-black rounded-lg"
+                rows="3"
+                placeholder="Write a review..."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                ></textarea>
+                <button
+                className="mt-3 bg-blue-600 px-5 py-2 text-lg font-medium text-white rounded-lg hover:bg-blue-700"
+                onClick={handleSubmitComment}
+                >
               Submit Review
             </button>
           </div>
+                  </>   
+            )
+            }
 
           {/* Display Comments */}
           {comments?.length > 0 ? (
@@ -179,7 +186,7 @@ const ProductDetails = () => {
               />
               <div>
                 <p className="font-medium">{item.name}</p>
-                <p className="text-emerald-400">${item.price}</p>
+                <p className="text-emerald-400">₹{item.price}</p>
               </div>
             </Link>
           ))}

@@ -15,7 +15,7 @@ const Navbar = () => {
             to={`${isAdmin ?"/secret-dashboard":"/"}`}
             className="text-2xl font-bold text-emerald-400 items-center space-x-2 flex"
           >
-            E-Commerce
+            VARDHAMAN FURNISHING
           </Link>
           <nav className="flex flex-wrap items-center gap-4">
             {user?.role==="customer" && (

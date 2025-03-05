@@ -89,7 +89,7 @@ const AdminOrders = () => {
                     ))}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-gray-300">
-                    ${order.totalAmount?.toFixed(2) || "0.00"}{" "}
+                  ₹{order.totalAmount?.toFixed(2) || "0.00"}{" "}
                     {/* Handle potential null */}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">

@@ -5,13 +5,13 @@ import { PlusCircle, Upload, Loader } from "lucide-react";
 import { useProductStore } from "../stores/useProductStore";
 
 const categories = [
-  "jeans",
-  "t-shirts",
-  "shoes",
-  "glasses",
-  "jackets",
-  "suits",
-  "bags",
+  "carpet-wooden",
+  "PVC-carpet-marble",
+  "carpet-vinyl-tiles",
+  "flower-wallpaper",
+  "geometric-wallpaper",
+  "bricks-wallpaper",
+  "3d-wallpaper",
 ];
 
 const CreateProductForm = () => {
@@ -37,6 +37,7 @@ const CreateProductForm = () => {
   };
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
+    console.log(file)
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {

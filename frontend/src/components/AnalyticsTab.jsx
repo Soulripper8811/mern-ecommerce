@@ -81,7 +81,7 @@ const AnalyticsTab = () => {
         <AnalyticsCard title="Total Users" value={analyticsData.users.toLocaleString()} icon={Users} />
         <AnalyticsCard title="Total Products" value={analyticsData.products.toLocaleString()} icon={Package} />
         <AnalyticsCard title="Total Sales" value={analyticsData.totalSales.toLocaleString()} icon={ShoppingCart} />
-        <AnalyticsCard title="Total Revenue" value={`$${analyticsData.totalRevenue.toLocaleString()}`} icon={DollarSign} />
+        <AnalyticsCard title="Total Revenue" value={`₹${analyticsData.totalRevenue.toLocaleString()}`} icon={DollarSign} />
       </div>
 
       {/* Time Filter Dropdown */}
