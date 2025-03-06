@@ -92,7 +92,7 @@ const ProductDetails = () => {
         />
         <h2 className="text-3xl font-bold mt-5">{product.name}</h2>
         <p className="text-xl text-emerald-400 font-semibold">
-          ${product.price}
+          ${product.price} per sqft
         </p>
         <p className="mt-3 text-gray-300">{product.description}</p>
         {user&&<button

@@ -28,7 +28,7 @@ router.post("/:id/comment", protectRoute, CommentOnProduct);
 // Admin Routes
 router.get("/", protectRoute, getAllProducts);
 router.post("/", protectRoute, adminRoute, createProduct);
-router.delete("/:id", protectRoute, adminRoute, deleteProduct);
 router.patch("/featured/:id", protectRoute, adminRoute, toggleFeaturedProduct);
+router.delete("/:id", protectRoute, adminRoute, deleteProduct);
 
 export default router;

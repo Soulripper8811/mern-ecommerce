@@ -11,7 +11,7 @@ const categories = [
   { href: "/carpet-vinyl-tiles", name: "Carpet tiles(Vinyl flooring)", imageUrl: "/shoes.jpg" },
   { href: "/flower-wallpaper", name: "Flower wallpaper", imageUrl: "/glasses.png" },
   { href: "/geometric-wallpaper", name: "Geometric wallpaper", imageUrl: "/jackets.jpg" },
-  { href: "/bricks-wallpaper", name: "Bricks wallpeper", imageUrl: "/suits.jpg" },
+  { href: "/bricks-wallpaper", name: "Bricks wallpaper", imageUrl: "/suits.jpg" },
   { href: "/3d-wallpaper", name: "3d wallpaper", imageUrl: "/bags.jpg" },
 ];
 

@@ -20,9 +20,11 @@ const ChatButton = ({ products, userId }) => {
     setIsChatOpen((prev) => !prev);
   };
 
-  const handleSendMessage = async () => {
-    if (userInput.trim() === "") return;
+  const handleSendMessage = async (e) => {
+    
 
+      if (userInput.trim() === "") return;
+      
     const newMessage = { role: "user", content: userInput };
     setMessages((prev) => [...prev, newMessage]);
     setUserInput("");
@@ -44,6 +46,12 @@ const ChatButton = ({ products, userId }) => {
           content: "Oops! There seems to be an issue. Please try again later.",
         },
       ]);
+    }
+  
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
     }
   };
 
@@ -143,6 +151,7 @@ const ChatButton = ({ products, userId }) => {
               type="text"
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
+              onKeyDown={handleKeyDown}
               placeholder="Type a message..."
               className="flex-grow border border-gray-300 rounded-md p-2 focus:outline-none focus:ring focus:border-green-400 text-black"
             />

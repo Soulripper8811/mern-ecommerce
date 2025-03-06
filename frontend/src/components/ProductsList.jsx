@@ -4,7 +4,6 @@ import { useProductStore } from "../stores/useProductStore";
 
 const ProductsList = () => {
   const { deleteProduct, toggleFeaturedProduct, products } = useProductStore();
-  console.log("products hu ", products);
 
   return (
     <motion.div
@@ -71,7 +70,7 @@ const ProductsList = () => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-300">
-                ₹{product.price.toFixed(2)}
+                  ${product.price.toFixed(2)}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
@@ -79,7 +78,10 @@ const ProductsList = () => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <button
-                  onClick={() => toggleFeaturedProduct(product._id)}
+                  onClick={() => {
+                    console.log(product._id)
+                    toggleFeaturedProduct(product._id)
+                  }}
                   className={`p-1 rounded-full ${
                     product.isFeatured
                       ? "bg-yellow-400 text-gray-900"

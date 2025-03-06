@@ -16,19 +16,20 @@ export const getFeaturedProducts = async (req, res) => {
   try {
     let featuredProducts = await redis.get("featuredProducts");
     if (featuredProducts) {
-      return res.status(200).json(JSON.parse(featuredProducts));
+      res.status(200).json(JSON.parse(featuredProducts));
     }
+    //if not in redis then get from db
+    //.lean() is gonna convert the whole object to javascript object not like in mongoose document  means its return in plain object good for performance
 
     featuredProducts = await Product.find({ isFeatured: true }).lean();
 
-    if (!featuredProducts.length) {
+    if (!featuredProducts) {
       return res.status(404).json({ message: "No featured products found" });
     }
-
     await redis.set("featuredProducts", JSON.stringify(featuredProducts));
     res.status(200).json(featuredProducts);
   } catch (error) {
-    console.error("Error in getFeaturedProducts controller:", error.message);
+    console.error("Error in get featured controller:", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -133,16 +134,16 @@ export const getProductsByCategory = async (req, res) => {
 export const toggleFeaturedProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+    if (product) {
+      product.isFeatured = !product.isFeatured;
+      const updatedProduct = await product.save();
+      await updateFeaturedProductsCache();
+      res.json(updatedProduct);
+    } else {
+      res.status(404).json({ message: "Product not found" });
     }
-
-    product.isFeatured = !product.isFeatured;
-    await product.save();
-    await updateFeaturedProductsCache();
-    res.json(product);
   } catch (error) {
-    console.error("Error in toggleFeaturedProduct controller:", error.message);
+    console.log("Error in toggleFeaturedProduct controller", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
@@ -199,9 +200,11 @@ export const getProductComments = async (req, res) => {
 
 async function updateFeaturedProductsCache() {
   try {
+    // The lean() method  is used to return plain JavaScript objects instead of full Mongoose documents. This can significantly improve performance
+
     const featuredProducts = await Product.find({ isFeatured: true }).lean();
     await redis.set("featuredProducts", JSON.stringify(featuredProducts));
   } catch (error) {
-    console.error("Error in updateFeaturedProductsCache:", error.message);
+    console.log("error in update cache function");
   }
 }
