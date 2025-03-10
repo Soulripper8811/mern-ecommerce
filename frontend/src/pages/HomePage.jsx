@@ -6,13 +6,13 @@ import { useUserStore } from "../stores/useUserStore";
 import { Navigate } from "react-router-dom";
 
 const categories = [
-  { href: "/carpet-wooden", name: "Carpet(wooden flooring)", imageUrl: "/jeans.jpg" },
-  { href: "/PVC-carpet-marble", name: "PVC Carpet(marble)", imageUrl: "/tshirts.jpg" },
-  { href: "/carpet-vinyl-tiles", name: "Carpet tiles(Vinyl flooring)", imageUrl: "/shoes.jpg" },
-  { href: "/flower-wallpaper", name: "Flower wallpaper", imageUrl: "/glasses.png" },
-  { href: "/geometric-wallpaper", name: "Geometric wallpaper", imageUrl: "/jackets.jpg" },
-  { href: "/bricks-wallpaper", name: "Bricks wallpaper", imageUrl: "/suits.jpg" },
-  { href: "/3d-wallpaper", name: "3d wallpaper", imageUrl: "/bags.jpg" },
+  { href: "/carpet-wooden", name: "Carpet", imageUrl: "/carpet.png" },
+  { href: "/PVC-carpet-marble", name: "Wallpaper", imageUrl: "/wallpaper.png" },
+  { href: "/carpet-vinyl-tiles", name: "Blinds", imageUrl: "/blinds.png" },
+  { href: "/flower-wallpaper", name: "Sofa", imageUrl: "/sofa.png" },
+  { href: "/geometric-wallpaper", name: "Curtains", imageUrl: "/curtains.png" },
+  { href: "/bricks-wallpaper", name: "Artifitial Grass", imageUrl: "/artificialGrass.png" },
+  { href: "/3d-wallpaper", name: "Doormate", imageUrl: "/doormate.png" },
 ];
 
 const HomePage = () => {

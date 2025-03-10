@@ -25,7 +25,7 @@ const ProductDetails = () => {
         const res = await axiosInstance.get(`/products/${id}`);
         setProduct(res.data);
       } catch (error) {
-        console.error("Error fetching product:", error);
+       
       }
     };
 

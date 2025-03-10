@@ -15,19 +15,21 @@ export const getAllProducts = async (req, res) => {
 export const getFeaturedProducts = async (req, res) => {
   try {
     let featuredProducts = await redis.get("featuredProducts");
-    if (featuredProducts) {
-      res.status(200).json(JSON.parse(featuredProducts));
-    }
-    //if not in redis then get from db
-    //.lean() is gonna convert the whole object to javascript object not like in mongoose document  means its return in plain object good for performance
 
+    if (featuredProducts) {
+      return res.status(200).json(JSON.parse(featuredProducts)); // ✅ Stops execution
+    }
+
+    // If not found in Redis, fetch from DB
     featuredProducts = await Product.find({ isFeatured: true }).lean();
 
-    if (!featuredProducts) {
-      return res.status(404).json({ message: "No featured products found" });
+    if (!featuredProducts || featuredProducts.length === 0) {
+      return res.status(404).json({ message: "No featured products found" }); // ✅ Stops execution if empty
     }
+
     await redis.set("featuredProducts", JSON.stringify(featuredProducts));
-    res.status(200).json(featuredProducts);
+
+    res.status(200).json(featuredProducts); // ✅ Single response
   } catch (error) {
     console.error("Error in get featured controller:", error.message);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -44,7 +46,6 @@ export const createProduct = async (req, res) => {
         folder: "products",
       });
     }
-    
 
     const product = await Product.create({
       name,

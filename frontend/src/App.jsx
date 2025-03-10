@@ -45,7 +45,7 @@ function App() {
       setChatProducts(response.data.products);
       console.log("Fetched Products:", response.data.products);
     } catch (error) {
-      toast.error("Error fetching products");
+      
     }
   };
 

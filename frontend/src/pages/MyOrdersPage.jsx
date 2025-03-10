@@ -20,8 +20,7 @@ const MyOrdersPage = () => {
       const response = await axiosInstance.get("/orders/user-order");
       setOrders(response.data);
     } catch (error) {
-      console.error("Error fetching orders:", error);
-      toast.error("Failed to fetch orders");
+      
     }
   };
 
