@@ -50,6 +50,10 @@ const ProductSchema = new mongoose.Schema(
       type: [CommentSchema], // Optional array of comments
       default: [],
     },
+    quantity:{
+      type:Number,
+      required:true
+    }
   },
   { timestamps: true }
 );

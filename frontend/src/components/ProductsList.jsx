@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { Trash, Star } from "lucide-react";
+import { Trash, Star, Edit } from "lucide-react";
 import { useProductStore } from "../stores/useProductStore";
+import { Link } from "react-router-dom";
 
 const ProductsList = () => {
   const { deleteProduct, toggleFeaturedProduct, products } = useProductStore();
@@ -32,6 +33,12 @@ const ProductsList = () => {
               className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
             >
               Category
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+            >
+              Quantity
             </th>
 
             <th
@@ -70,11 +77,14 @@ const ProductsList = () => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-300">
-                  ${product.price.toFixed(2)}
+                ₹{product.price.toFixed(2)}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-300">{product.category}</div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="text-sm text-gray-300">{product.quantity}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <button
@@ -91,13 +101,19 @@ const ProductsList = () => {
                   <Star className="h-5 w-5" />
                 </button>
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-2">
                 <button
                   onClick={() => deleteProduct(product._id)}
                   className="text-red-400 hover:text-red-300"
                 >
                   <Trash className="h-5 w-5" />
                 </button>
+                <Link
+                  className="text-green-400 hover:text-green-300"
+                  to={`/secret-dashboard/${product._id}`}
+                >
+                  <Edit className="h-5 w-5" />
+                </Link>
               </td>
             </tr>
           ))}

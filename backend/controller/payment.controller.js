@@ -2,6 +2,7 @@ import Coupon from "../models/coupon.model.js";
 import Order from "../models/order.model.js";
 import { stripe } from "../lib/stripe.js";
 import User from "../models/user.model.js";
+import Product from "../models/product.model.js";
 
 export const createCheckoutSession = async (req, res) => {
   try {
@@ -206,7 +207,16 @@ export const checkoutSuccess = async (req, res) => {
         shippingAddress, // Save the shipping address
       });
 
+
       await newOrder.save();
+
+      for (const product of products) {
+        await Product.findByIdAndUpdate(
+          product.id,
+          { $inc: { quantity: -product.quantity } }, // Decrease stock
+          { new: true }
+        );
+      }
 
       // Clear user cart after successful order
       const updatedUser = await User.findByIdAndUpdate(

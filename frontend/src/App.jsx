@@ -21,6 +21,7 @@ import ProfilePage from "./pages/ProfilePage";
 import { useProductStore } from "./stores/useProductStore";
 import ChatButton from "./components/ChatButton";
 import axiosInstance from "./lib/axios";
+import UpdateProductForm from "./pages/updateProductPage";
 
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
@@ -92,6 +93,12 @@ function App() {
             path="/secret-dashboard"
             element={
               user?.role === "admin" ? <AdminPage /> : <Navigate to="/login" />
+            }
+          />
+          <Route
+            path="/secret-dashboard/:productId"
+            element={
+              user?.role === "admin" ? <UpdateProductForm /> : <Navigate to="/login" />
             }
           />
           <Route path="/category/:category" element={<CategoryPage />} />

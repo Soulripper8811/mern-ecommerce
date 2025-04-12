@@ -30,6 +30,23 @@ export const useProductStore = create((set, get) => ({
       set({ loading: false });
     }
   },
+  updateProduct: async (productId, updatedData) => {
+    set({ loading: true });
+    try {
+      const response = await axios.patch(`/products/${productId}`, updatedData);
+      set((state) => ({
+        products: state.products.map((product) =>
+          product._id === productId ? { ...product, ...updatedData } : product
+        ),
+        loading: false,
+      }));
+      toast.success("Product updated successfully");
+      return response.data;
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to update product");
+      set({ loading: false });
+    }
+  },
 
   // ✅ Fetch a single product
   fetchSingleProduct: async (productId) => {
@@ -80,7 +97,6 @@ export const useProductStore = create((set, get) => ({
   toggleFeaturedProduct: async (productId) => {
     set({ loading: true });
     try {
-      console.log("enter huaa");
       const response = await axios.patch(`/products/featured/${productId}`);
       set((state) => ({
         products: state.products.map((product) =>
@@ -90,7 +106,6 @@ export const useProductStore = create((set, get) => ({
         ),
         loading: false,
       }));
-      console.log("ider nahi aaya");
       toast.success("Product updated successfully");
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to update product");

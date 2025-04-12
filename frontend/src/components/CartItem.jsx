@@ -1,5 +1,6 @@
 import { Minus, Plus, Trash } from "lucide-react";
 import { useCartStore } from "../stores/useCartStore";
+import { Link } from "react-router-dom";
 
 const CartItem = ({ item }) => {
   const { removeFromCart, updateQuantity } = useCartStore();
@@ -8,7 +9,9 @@ const CartItem = ({ item }) => {
     <div className="rounded-lg border p-4 shadow-sm border-gray-700 bg-gray-800 md:p-6">
       <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
         <div className="shrink-0 md:order-1">
+          <Link to={`http://localhost:5173/product/${item._id}`}>
           <img className="h-20 md:h-32 rounded object-cover" src={item.image} />
+          </Link>
         </div>
         <label className="sr-only">Choose quantity:</label>
 

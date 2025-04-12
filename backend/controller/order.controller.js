@@ -20,7 +20,6 @@ export const getAllOrders = async (req, res) => {
 export const getSingleUser = async (req, res) => {
   try {
     const userId = req.user._id;
-    console.log("userId", userId);
 
     // Fetch orders for the user and populate product details
     const orders = await Order.find({ user: userId })

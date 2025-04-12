@@ -33,6 +33,7 @@ const CreateProductForm = () => {
       price: "",
       category: "",
       image: "",
+      quantity:0,
     });
   };
   const handleImageChange = async (e) => {
@@ -116,6 +117,28 @@ const CreateProductForm = () => {
             value={newProduct.price}
             onChange={(e) =>
               setNewProduct({ ...newProduct, price: e.target.value })
+            }
+            step="0.01"
+            className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm 
+						py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500
+						 focus:border-emerald-500"
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="quantity"
+            className="block text-sm font-medium text-gray-300"
+          >
+            Qunantity
+          </label>
+          <input
+            type="number"
+            id="quantity"
+            name="quantity"
+            value={newProduct.quantity}
+            onChange={(e) =>
+              setNewProduct({ ...newProduct, quantity: e.target.value })
             }
             step="0.01"
             className="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm 

@@ -1,6 +1,7 @@
 import { redis } from "../lib/redis.js";
 import Product from "../models/product.model.js";
 import cloudinary from "../lib/cloudinary.js";
+import mongoose from "mongoose";
 
 export const getAllProducts = async (req, res) => {
   try {
@@ -38,7 +39,7 @@ export const getFeaturedProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, price, image, category } = req.body;
+    const { name, description, price, image, category,quantity } = req.body;
     let cloudinaryResponse = null;
 
     if (image) {
@@ -53,6 +54,7 @@ export const createProduct = async (req, res) => {
       price,
       image: cloudinaryResponse?.secure_url || "",
       category,
+      quantity:Number(quantity)
     });
     res.status(201).json(product);
   } catch (error) {
@@ -151,14 +153,21 @@ export const toggleFeaturedProduct = async (req, res) => {
 
 export const getSingleProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+    const { id } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid product ID format" });
     }
-    res.json(product);
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.status(200).json(product);
   } catch (error) {
     console.error("Error in getSingleProduct controller:", error.message);
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ error: "Server error", details: error.message });
   }
 };
 
@@ -196,6 +205,56 @@ export const getProductComments = async (req, res) => {
   } catch (error) {
     console.error("Error in getProductComments controller:", error.message);
     res.status(500).json({ error: "Server error", error: error.message });
+  }
+};
+export const updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, brand, price, salePrice, quantity, image } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ error: "Product ID is required to update" });
+    }
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    let cloudinaryResponse = null;
+
+    // // If a new image is provided, delete the existing image
+    // if (image) {
+    //   if (product.image) {
+    //     // Extract public ID from the image URL
+    //     const publicId = product.image.split("/").pop().split(".")[0]; // Extracts publicId from Cloudinary URL
+    //     await cloudinary.uploader.destroy(`products/${publicId}`); // Deletes existing image
+    //   }
+
+    //   // Upload new image
+    //   cloudinaryResponse = await cloudinary.uploader.upload(image, {
+    //     folder: "products",
+    //   });
+    // }
+
+    // Updating product fields
+    product.title = title || product.title;
+    product.description = description || product.description;
+    product.brand = brand || product.brand;
+    product.price = price || product.price;
+    product.salePrice = salePrice || product.salePrice;
+    product.quantity = quantity || product.quantity;
+    if (cloudinaryResponse) {
+      product.image = cloudinaryResponse.secure_url;
+    }
+
+    // Save updated product
+    await product.save();
+
+    res.status(200).json({ message: "Product updated successfully", product });
+  } catch (error) {
+    console.error("Error in update product controller:", error.message);
+    res.status(500).json({ error: "Server error", details: error.message });
   }
 };
 

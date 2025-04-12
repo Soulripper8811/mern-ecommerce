@@ -12,12 +12,11 @@ const ProductDetails = () => {
   const { user } = useUserStore();
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [suggestions, setSuggestions] = useState([]);
-  const { addToCart } = useCartStore();
-  const { fetchProductsByCategory, products } = useProductStore();
   const [comments, setComments] = useState([]);
   const [rating, setRating] = useState(5);
   const [message, setMessage] = useState("");
+  const { addToCart } = useCartStore();
+  const { fetchProductsByCategory, products } = useProductStore();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -25,7 +24,7 @@ const ProductDetails = () => {
         const res = await axiosInstance.get(`/products/${id}`);
         setProduct(res.data);
       } catch (error) {
-       
+        console.error("Error fetching product:", error);
       }
     };
 
@@ -46,35 +45,21 @@ const ProductDetails = () => {
       console.error("Error fetching comments:", error);
     }
   };
+
   useEffect(() => {
     fetchComments();
   }, [id]);
 
   const handleAddToCart = () => {
-    addToCart(product);
-    toast.success("Added to cart!");
-  };
+    if (product.quantity > 0) {
+      addToCart(product);
+      toast.success("Added to cart!");
 
-  const handleSubmitComment = async () => {
-    if (!message.trim()) {
-      toast.error("Comment cannot be empty");
-      return;
-    }
-
-    try {
-      await axiosInstance.post(`/products/${id}/comment`, {
-        user: user.name, // Use user name instead of ID for display
-        rating,
-        message,
-      });
-
-      setMessage("");
-      setRating(5);
-      toast.success("Comment added!");
-      fetchComments(); // Refetch comments instead of manually adding
-    } catch (error) {
-      console.error("Error posting comment:", error);
-      toast.error("Failed to add comment");
+      // Update local state to reflect the decreased quantity
+      setProduct((prev) => ({
+        ...prev,
+        quantity: prev.quantity - 1,
+      }));
     }
   };
 
@@ -95,67 +80,88 @@ const ProductDetails = () => {
           ${product.price} per sqft
         </p>
         <p className="mt-3 text-gray-300">{product.description}</p>
-        {user&&<button
-          className="mt-5 flex items-center gap-2 bg-emerald-600 px-5 py-2 text-lg font-medium text-white rounded-lg hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-300"
-          onClick={handleAddToCart}
-        >
-          <ShoppingCart size={22} />
-          Add to Cart
-        </button>}
+
+        {/* Conditionally render Add to Cart button */}
+        {user && product.quantity > 0 ? (
+          <button
+            className="mt-5 flex items-center gap-2 bg-emerald-600 px-5 py-2 text-lg font-medium text-white rounded-lg hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-300"
+            onClick={handleAddToCart}
+          >
+            <ShoppingCart size={22} />
+            Add to Cart ({product.quantity} left)
+          </button>
+        ) : (
+          <p className="mt-3 text-red-500 font-semibold">Out of Stock</p>
+        )}
 
         {/* Comments Section */}
         <div className="mt-10">
           <h3 className="text-2xl font-semibold">Customer Reviews</h3>
 
           {/* Comment Form */}
-          {
-              user&&(
-
-             <>
-          <div className="mt-5">
-            <h4 className="text-lg font-medium">Leave a Review</h4>
-            <div className="flex gap-2 my-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  size={22}
-                  className={`cursor-pointer ${
-                    star <= rating ? "text-yellow-400" : "text-gray-500"
-                  }`}
-                  onClick={() => setRating(star)}
-                />
-              ))}
-            </div>
-            
+          {user && (
+            <>
+              <div className="mt-5">
+                <h4 className="text-lg font-medium">Leave a Review</h4>
+                <div className="flex gap-2 my-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={22}
+                      className={`cursor-pointer ${
+                        star <= rating ? "text-yellow-400" : "text-gray-500"
+                      }`}
+                      onClick={() => setRating(star)}
+                    />
+                  ))}
+                </div>
                 <textarea
-                className="w-full p-2 text-black rounded-lg"
-                rows="3"
-                placeholder="Write a review..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                  className="w-full p-2 text-black rounded-lg"
+                  rows="3"
+                  placeholder="Write a review..."
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
                 ></textarea>
                 <button
-                className="mt-3 bg-blue-600 px-5 py-2 text-lg font-medium text-white rounded-lg hover:bg-blue-700"
-                onClick={handleSubmitComment}
+                  className="mt-3 bg-blue-600 px-5 py-2 text-lg font-medium text-white rounded-lg hover:bg-blue-700"
+                  onClick={async () => {
+                    if (!message.trim()) {
+                      toast.error("Comment cannot be empty");
+                      return;
+                    }
+
+                    try {
+                      await axiosInstance.post(`/products/${id}/comment`, {
+                        user: user.name, // Use user name instead of ID for display
+                        rating,
+                        message,
+                      });
+
+                      setMessage("");
+                      setRating(5);
+                      toast.success("Comment added!");
+                      fetchComments(); // Refetch comments instead of manually adding
+                    } catch (error) {
+                      console.error("Error posting comment:", error);
+                      toast.error("Failed to add comment");
+                    }
+                  }}
                 >
-              Submit Review
-            </button>
-          </div>
-                  </>   
-            )
-            }
+                  Submit Review
+                </button>
+              </div>
+            </>
+          )}
 
           {/* Display Comments */}
           {comments?.length > 0 ? (
-            comments?.map((comment, index) => (
+            comments.map((comment, index) => (
               <div
                 key={index}
                 className="mt-4 p-3 border border-gray-600 rounded-lg"
               >
                 <p className="text-lg font-medium">{comment?.user}</p>
-                <p className="text-yellow-400">
-                  {"⭐".repeat(comment?.rating)}
-                </p>
+                <p className="text-yellow-400">{"⭐".repeat(comment?.rating)}</p>
                 <p className="text-gray-300">{comment?.message}</p>
                 <p className="text-sm text-gray-500">
                   {new Date(comment?.createdAt).toLocaleString()}
