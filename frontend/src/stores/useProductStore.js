@@ -112,6 +112,30 @@ export const useProductStore = create((set, get) => ({
       set({ loading: false });
     }
   },
+  decreaseProductQty: (productId) => {
+    set((state) => ({
+      products: state.products.map((product) =>
+        product._id === productId
+          ? { ...product, quantity: Math.max(0, product.quantity - 1) }
+          : product
+      ),
+    }));
+  },
+  updateProductQuantity: (id, change) =>
+    set((state) => ({
+      products: state.products.map((p) =>
+        p._id === id ? { ...p, quantity: p.quantity + change } : p
+      ),
+    })),
+  increaseProductQty: (productId) => {
+    set((state) => ({
+      products: state.products.map((product) =>
+        product._id === productId
+          ? { ...product, quantity: product.quantity + 1 }
+          : product
+      ),
+    }));
+  },
 
   // ✅ Fetch featured products
   fetchFeaturedProducts: async () => {

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import toast from "react-hot-toast";
 import { ShoppingCart } from "lucide-react";
 import { useUserStore } from "../stores/useUserStore";
@@ -8,9 +7,6 @@ import { Link } from "react-router-dom";
 const ProductCard = ({ product }) => {
   const { user } = useUserStore();
   const { addToCart } = useCartStore();
-  
-  // Local state for quantity to update UI dynamically
-  const [availableQuantity, setAvailableQuantity] = useState(product.quantity);
 
   const handleAddToCart = () => {
     if (!user) {
@@ -18,14 +14,12 @@ const ProductCard = ({ product }) => {
       return;
     }
 
-    if (availableQuantity <= 0) {
+    if (product.quantity <= 0) {
       toast.error("This product is out of stock", { id: "outOfStock" });
       return;
     }
 
-    // Add product to cart and update available quantity
     addToCart(product);
-    setAvailableQuantity((prev) => prev - 1);
     toast.success("Product added to cart!");
   };
 
@@ -53,14 +47,14 @@ const ProductCard = ({ product }) => {
         </div>
 
         {/* Display Available Quantity */}
-        <p className="text-gray-300">Available: {availableQuantity}</p>
+        <p className="text-gray-300">Available: {product.quantity}</p>
 
-        {/* Show "Out of Stock" message if quantity is zero */}
-        {availableQuantity > 0 ? (
+        {/* Button or Out of Stock message */}
+        {product.quantity > 0 ? (
           <button
             className="flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-300 disabled:bg-gray-500 disabled:cursor-not-allowed"
             onClick={handleAddToCart}
-            disabled={!user || availableQuantity <= 0}
+            disabled={!user}
           >
             <ShoppingCart size={22} className="mr-2" />
             Add to cart

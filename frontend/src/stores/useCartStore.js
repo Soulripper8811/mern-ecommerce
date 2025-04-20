@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "../lib/axios";
 import { toast } from "react-hot-toast";
-
+import { useProductStore } from "./useProductStore";
 export const useCartStore = create((set, get) => ({
   cart: [],
   coupon: null,
@@ -50,11 +50,9 @@ export const useCartStore = create((set, get) => ({
     try {
       await axios.post("/cart", { productId: product._id });
       toast.success("Product added to cart");
-
+  
       set((prevState) => {
-        const existingItem = prevState.cart.find(
-          (item) => item._id === product._id
-        );
+        const existingItem = prevState.cart.find((item) => item._id === product._id);
         const newCart = existingItem
           ? prevState.cart.map((item) =>
               item._id === product._id
@@ -64,17 +62,33 @@ export const useCartStore = create((set, get) => ({
           : [...prevState.cart, { ...product, quantity: 1 }];
         return { cart: newCart };
       });
+  
+      // Update product quantity globally
+      useProductStore.getState().decreaseProductQty(product._id);
+  
       get().calculateTotals();
     } catch (error) {
-      toast.error(error.response.data.message || "An error occurred");
+      toast.error(error.response?.data?.message || "An error occurred");
     }
   },
   removeFromCart: async (productId) => {
-    await axios.delete(`/cart`, { data: { productId } });
-    set((prevState) => ({
-      cart: prevState.cart.filter((item) => item._id !== productId),
-    }));
-    get().calculateTotals();
+    try {
+      await axios.delete(`/cart`, { data: { productId } });
+  
+      const product = get().cart.find((item) => item._id === productId);
+      if (product) {
+        // Increase quantity back in product store
+        useProductStore.getState().increaseProductQty(productId);
+      }
+  
+      set((prevState) => ({
+        cart: prevState.cart.filter((item) => item._id !== productId),
+      }));
+  
+      get().calculateTotals();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to remove product");
+    }
   },
   updateQuantity: async (productId, quantity) => {
     if (quantity === 0) {

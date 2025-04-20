@@ -103,7 +103,7 @@ const AdminOrders = () => {
                       ₹{order.totalAmount?.toFixed(2) || "0.00"}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap">
-                      <select
+                     { order.status==="Delivered"?(<h1 className="p-2 bg-gray-900 text-white rounded cursor-pointer w-full">{order.status}</h1>):<select
                         className="p-2 bg-gray-900 text-white rounded cursor-pointer w-full"
                         value={order.status}
                         onChange={(e) =>
@@ -113,7 +113,7 @@ const AdminOrders = () => {
                         <option value="Pending">Pending</option>
                         <option value="Shipped">Shipped</option>
                         <option value="Delivered">Delivered</option>
-                      </select>
+                      </select>}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
                       {order.status === "Pending" && (

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { MoveRight } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "../lib/axios";
+import { useState } from "react";
 
 const stripePromise = loadStripe(
   "pk_test_51QwJ8JRoFLQKL0S1Ndgs4IGYclUgBVaEdHrqZCoKXrn0VVYxLNBy3UhswgLzQ41TShYLaQtqo8zVeRgrjURXqauQ00mc118EW5"
@@ -11,6 +12,7 @@ const stripePromise = loadStripe(
 
 const OrderSummary = () => {
   const { total, subtotal, coupon, isCouponApplied, cart } = useCartStore();
+  const [loading, setLoading] = useState(false); // ✅ added loading state
 
   const savings = subtotal - total;
   const formattedSubtotal = subtotal.toFixed(2);
@@ -18,20 +20,28 @@ const OrderSummary = () => {
   const formattedSavings = savings.toFixed(2);
 
   const handlePayment = async () => {
-    const stripe = await stripePromise;
-    const res = await axios.post("/payments/create-checkout-session", {
-      products: cart,
-      couponCode: coupon ? coupon.code : null,
-    });
+    if (loading) return; // ✅ Prevent double click
+    setLoading(true);
 
-    const session = res.data;
-    console.log("session is here", session);
-    const result = await stripe.redirectToCheckout({
-      sessionId: session.id,
-    });
+    try {
+      const stripe = await stripePromise;
+      const res = await axios.post("/payments/create-checkout-session", {
+        products: cart,
+        couponCode: coupon ? coupon.code : null,
+      });
 
-    if (result.error) {
-      console.error("Error:", result.error);
+      const session = res.data;
+      const result = await stripe.redirectToCheckout({
+        sessionId: session.id,
+      });
+
+      if (result.error) {
+        console.error("Stripe redirect error:", result.error.message);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      setLoading(false);
     }
   };
 
@@ -47,20 +57,14 @@ const OrderSummary = () => {
       <div className="space-y-4">
         <div className="space-y-2">
           <dl className="flex items-center justify-between gap-4">
-            <dt className="text-base font-normal text-gray-300">
-              Original price
-            </dt>
-            <dd className="text-base font-medium text-white">
-            ₹{formattedSubtotal}
-            </dd>
+            <dt className="text-base font-normal text-gray-300">Original price</dt>
+            <dd className="text-base font-medium text-white">₹{formattedSubtotal}</dd>
           </dl>
 
           {savings > 0 && (
             <dl className="flex items-center justify-between gap-4">
               <dt className="text-base font-normal text-gray-300">Savings</dt>
-              <dd className="text-base font-medium text-emerald-400">
-                -₹{formattedSavings}
-              </dd>
+              <dd className="text-base font-medium text-emerald-400">-₹{formattedSavings}</dd>
             </dl>
           )}
 
@@ -74,21 +78,23 @@ const OrderSummary = () => {
               </dd>
             </dl>
           )}
+
           <dl className="flex items-center justify-between gap-4 border-t border-gray-600 pt-2">
             <dt className="text-base font-bold text-white">Total</dt>
-            <dd className="text-base font-bold text-emerald-400">
-            ₹{formattedTotal}
-            </dd>
+            <dd className="text-base font-bold text-emerald-400">₹{formattedTotal}</dd>
           </dl>
         </div>
 
         <motion.button
-          className="flex w-full items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-300"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          className={`flex w-full items-center justify-center rounded-lg px-5 py-2.5 text-sm font-medium text-white transition ${
+            loading ? "bg-gray-500 cursor-not-allowed" : "bg-emerald-600 hover:bg-emerald-700"
+          }`}
+          whileHover={!loading ? { scale: 1.05 } : {}}
+          whileTap={!loading ? { scale: 0.95 } : {}}
           onClick={handlePayment}
+          disabled={loading}
         >
-          Proceed to Checkout
+          {loading ? "Processing..." : "Proceed to Checkout"}
         </motion.button>
 
         <div className="flex items-center justify-center gap-2">
@@ -105,4 +111,5 @@ const OrderSummary = () => {
     </motion.div>
   );
 };
+
 export default OrderSummary;
